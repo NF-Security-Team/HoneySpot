@@ -49,7 +49,12 @@ namespace HoneySpotService
             // Creating sniff file
             if (!File.Exists(sniff_path))
             {
-                File.Create(sniff_path);
+                File.AppendAllText(sniff_path,"");
+            }
+            // Creating sniff file
+            if (!File.Exists(sniff_path))
+            {
+                File.AppendAllText(WL_path, "");
             }
 
             TcpListener server = null;
@@ -57,6 +62,8 @@ namespace HoneySpotService
             {
                 // Set the TcpListener on port 6859.
                 Int32 port = 6859;
+                CheckState_path = CheckState_path + "HoneySpotter_" + port.ToString() + ".CurrState";
+
                 IPAddress addr = IPAddress.Parse("0.0.0.0");
 
                 // TcpListener server = new TcpListener(port);
@@ -87,26 +94,51 @@ namespace HoneySpotService
 
                     // Read all lines received from connected client
                     StreamReader streamRd = new StreamReader(stream);
+                    
                     while(true)
                     {
-                        string streamLine = streamRd.ReadLine();
-                        Logger.Info("Received line. Writing to sniff file..." + Environment.NewLine);
-                        Logger.Debug(streamLine + Environment.NewLine);
+                        try
+                        {
+                            string streamLine = streamRd.ReadLine();
+                            Logger.Info("Received line. Writing to sniff file..." + Environment.NewLine);
+                            Logger.Debug(streamLine + Environment.NewLine);
 
-                        current_dateTime = DateTime.Now.ToString();
+                            current_dateTime = DateTime.Now.ToString();
 
-                        ReceivedTraffic.Add(current_dateTime + "," + src_ip_addr + "," + streamLine);
-                #if DEBUG
-                        Console.WriteLine("Sniff Path: " + sniff_path + " -- Received Traffic: " + ReceivedTraffic[(ReceivedTraffic.Count - 1)] + Environment.NewLine);
-                #endif
-                        /*
-                        //Only needed for testing purposes...
-                        File.AppendAllText(sniff_path, ReceivedTraffic[(ReceivedTraffic.Count-1)] + Environment.NewLine);
-                        */
 
-                        client.Close();
-                        break;
 
+
+
+                            ///IP WHITELIST SECTION                        
+                            //init Array Whitelist
+                            string[] logFile = File.ReadAllLines(WL_path);
+                            //
+                            List<string> logList = new List<string>(logFile);
+
+                            if (!logList.Contains(src_ip_addr))
+                            {
+                                ReceivedTraffic.Add(current_dateTime + "," + src_ip_addr + "," + streamLine);
+                                string Content = "Sniff Path: " + sniff_path + " -- Received Traffic: " + ReceivedTraffic[(ReceivedTraffic.Count - 1)] + Environment.NewLine;
+#if DEBUG
+                                Console.WriteLine(Content);
+#endif
+
+                                /// Set CurrState file check output for CheckMK plugin                            
+                                File.WriteAllText(CheckState_path, "CRITICAL - CRIT STATE -" + Content);
+
+                            }
+                            /*
+                            //Only needed for testing purposes...
+                            File.AppendAllText(sniff_path, ReceivedTraffic[(ReceivedTraffic.Count-1)] + Environment.NewLine);
+                            */
+
+                            client.Close();
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Debug("[DoWork -- TCP Listener -- ERROR --> ] " + ex.Message);
+                        }
                     }
                 }
             }
