@@ -51,7 +51,7 @@ namespace HoneySpotService
             {
                 File.AppendAllText(sniff_path,"");
             }
-            // Creating sniff file
+            // Creating WhiteList file
             if (!File.Exists(sniff_path))
             {
                 File.AppendAllText(WL_path, "");
