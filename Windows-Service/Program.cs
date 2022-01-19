@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using NLog;
 using Exceptionless;
+using System.IO;
 
 namespace HoneySpotService
 {
@@ -56,8 +57,9 @@ namespace HoneySpotService
 
                 Console.Title = AppDomain.CurrentDomain.FriendlyName;
 
-                Logger.Debug("Running in console mode");
+                Logger.Debug("Starting HoneySpot in service mode...");
                 _service.Start();
+                
 
                 Console.WriteLine("Press any key to stop the service...");
                 Console.Read();
@@ -67,7 +69,7 @@ namespace HoneySpotService
             // service mode
             else
             {
-                Logger.Debug("Running in service mode");
+                Logger.Debug("Starting HoneySpot in service mode...");
                 ServiceBase.Run(servicesToRun);
             }
         }

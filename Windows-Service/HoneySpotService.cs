@@ -7,11 +7,11 @@ namespace HoneySpotService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly TestService s;
+        private readonly HoneySpotListenerSRV s;
         public HoneySpotService()
         {
             InitializeComponent();
-            s = new TestService();
+            s = new HoneySpotListenerSRV();
         }
 
         protected override void OnStart(string[] args)
