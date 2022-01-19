@@ -96,7 +96,9 @@ namespace HoneySpotService
                         current_dateTime = DateTime.Now.ToString();
 
                         ReceivedTraffic.Add(current_dateTime + "," + src_ip_addr + "," + streamLine);
-
+                #if DEBUG
+                        Console.WriteLine("Sniff Path: " + sniff_path + " -- Received Traffic: " + ReceivedTraffic[(ReceivedTraffic.Count - 1)] + Environment.NewLine);
+                #endif
                         /*
                         //Only needed for testing purposes...
                         File.AppendAllText(sniff_path, ReceivedTraffic[(ReceivedTraffic.Count-1)] + Environment.NewLine);
