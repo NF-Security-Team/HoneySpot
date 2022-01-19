@@ -87,7 +87,6 @@ namespace HoneySpotService
 
                     // Read all lines received from connected client
                     StreamReader streamRd = new StreamReader(stream);
-                    int i;
                     while(true)
                     {
                         string streamLine = streamRd.ReadLine();
