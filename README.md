@@ -15,4 +15,44 @@ TODO:
 # How it works? <br>
 The concept is fairly simple. <br>
 
+1) Install a Windows or Linux "HoneySpotListenerSRV" Service via command line args <br>
+Windows <br>
+```
+HoneySpotListenerSRV.exe /install -uninstall (shorten /i and /u)
+```
+<br>
+Linux (TODO) <br>
+```
+chmod +x HoneySpotListenerSRV
+./HoneySpotListenerSRV -install or -uninstall (shorten /i and /u)
+```
+<br>
+2) Install most recent Check_Mk Agent <br>
+Windows <br>
+```
+check_mk_agent.msi
+```
+Linux (DEB) <br>
+```
+root@linux# dpkg -i check-mk-agent_X.X.XpXX-X_all.deb
+```
+<br>
+3) Place the Check_Mk plugins inside "Plugins" local directory 
+Windows <br>
+```
+C:\ProgramData\checkmk\agent\plugins\
+```
+Linux <br>
+```
+root@linux# chmod +x /usr/lib/check_mk_agent/local/HoneySpoRt_%portNumber%.sh
+```
+<br>
+4) Do a "Service Discovery" and add your New HoneySpoRt Local Services <br>
+
+![](https://imgur.com/owt6fgy)
+<br>
+
+5) Set Notifications to know when something falls in your TRAP!<br>
+![](https://imgur.com/a/aIwJcmX)
+<br> 
 TODO REST
