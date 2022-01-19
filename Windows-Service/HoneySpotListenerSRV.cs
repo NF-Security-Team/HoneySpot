@@ -123,8 +123,12 @@ namespace HoneySpotService
                                 Console.WriteLine(Content);
 #endif
 
-                                /// Set CurrState file check output for CheckMK plugin                            
+                                /// Set CurrState file check output for CheckMK plugin in - CRITICAL STATE                            
                                 File.WriteAllText(CheckState_path, "CRITICAL - CRIT STATE -" + Content);
+                                //wait 30 minutes
+                                Thread.Sleep(1000 * 60 * 30);
+                                /// ReSet CurrState file check output for CheckMK plugin in - OK STATE                            
+                                File.WriteAllText(CheckState_path, "OK - OK STATE");
 
                             }
                             /*
