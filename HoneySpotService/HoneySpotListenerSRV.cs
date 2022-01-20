@@ -14,6 +14,8 @@ namespace HoneySpotService
     public class HoneySpotListenerSRV
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public static String CheckState_path;
+        public static String WL_path = @".\Logger\WhiteList.db";
         public static String sniff_path = @".\Logger\sniff";
         public static String logger_folder = @".\Logger";
         List<string> ReceivedTraffic = new List<string>();
