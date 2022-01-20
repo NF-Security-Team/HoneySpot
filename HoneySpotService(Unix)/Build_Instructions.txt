@@ -1,0 +1,4 @@
+# I personally suggest building it as an ELF file with pyinstaller
+
+pyinstaller --onefile HoneySpotListenerSRV.py
+
