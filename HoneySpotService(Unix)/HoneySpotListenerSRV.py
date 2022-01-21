@@ -11,7 +11,7 @@ def on_new_client(connection, client_address, rcvd_data, all_data):
 			BUFFER_SIZE = 1024 * 128
 			client_ip = client_address[0]
 			client_src_port = str(client_address[1])
-			print('Connection from ' + client_ip + ':' + client_src_port + " received...") # debug
+			#print('Connection from ' + client_ip + ':' + client_src_port + " received...") # debug
 			# Creating our empty buffer stream
 			rcvd_line = ""
 			# Receive the data in small chunks
@@ -41,14 +41,21 @@ def on_new_client(connection, client_address, rcvd_data, all_data):
 			rcvd_line = rcvd_line.strip("\r")
 			# Save received data to rcvd_data array
 			all_data.append(curr_date + "," + client_ip + "," + rcvd_line)
-			print(all_data[-1]) # debug
-			connection.close()
+			#print(all_data[-1]) # debug
+			#print('Waiting for connections...') #debug
+			if connection:
+				connection.close()
+			break
+		except socket.error as err:
+			#print('Probably the socket has timed out...' + str(err)) # debug
 			break
 		finally:
 			# Clean up the connection
-			connection.close()
+			if connection:
+				connection.close()
 			break
-	connection.close()
+	if connection:
+		connection.close()
 
 def HoneySpotListener(all_data):
 	# Creating our rcvd_data array to temporary store all our clients lines of commands
@@ -59,21 +66,29 @@ def HoneySpotListener(all_data):
 
 	# Bind the socket to the port
 	server_address = ('0.0.0.0', 6857)
-	print('Starting up HoneySpotService on %s port %s' % server_address) # debug
+	#print('Starting up HoneySpotService on %s port %s' % server_address) # debug
 	sock.bind(server_address)
 
 	# Listen for incoming connections
 	sock.listen(1)
+	sock.settimeout(5)
 
 	# Listen for incoming connection for 60 seconds
-	reset_time = time.time() + 60
+	reset_time = time.time() + 20
 
 	while time.time()<reset_time:
-		# Wait for a connection
-		print('Waiting for a connection...') # debug
-		connection, client_address = sock.accept()
-		t = Thread(target=on_new_client,args=(connection,client_address,rcvd_data,all_data))
-		t.start()
+		try:
+			# Wait for connections
+			connection, client_address = sock.accept()
+			t = Thread(target=on_new_client,args=(connection,client_address,rcvd_data,all_data))
+			t.start()
+		except socket.error as e:
+			# If there's a client connected timed out, close the connection. Otherwise continue
+			try:
+				connection.close()
+			except:
+				continue
+			continue
 
 
 # Main exectution starting...
@@ -83,7 +98,8 @@ all_data = []
 
 # Starting our Listener, it will execute for 60 secs and then it will stop by itself. So on... 
 while True:
-	print("Listener Starting...") # debug
+	#print("Listener Starting...") # debug
+	#print('Waiting for connections...') # debug
 	HoneySpotListener(all_data)
-	print("Listener Stopping...") # debug
-	print(all_data) # debug
+	#print("Listener Stopping...") # debug
+	#print(all_data) # debug
