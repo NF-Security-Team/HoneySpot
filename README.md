@@ -43,9 +43,15 @@ root@linux# dpkg -i check-mk-agent_X.X.XpXX-X_all.deb
 ```
 
 3) Add Firewall Exclusion for Executable path (Inbound Traffic) <br>
+Windows <br>
 
 ```
 netsh advfirewall firewall add rule name="HoneySpot_PORTNUMBER" dir=in action=allow program="C:\HoneySpot\HoneySpoRt_Service.exe" enable=yes
+```
+
+Linux (DEB) <br>
+```
+root@linux# TODO TODO TODO TODO
 ```
 
 4) Place the Check_Mk plugins inside "Plugins" local directory 
