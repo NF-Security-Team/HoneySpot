@@ -16,28 +16,28 @@ $OK = "OK"
 #### Code Start
 
 	#The file where it needs to be written current state be sure to replace "HONEYPOTNAME" with the actual monitored honeypot name
-    $Body = & "C:\ProgramData\checkmk\agent\mrpe\HoneySpotter_HONEYPOTNAME.CurrState"
+    $Body = "C:\ProgramData\checkmk\agent\mrpe\HoneySpotter_HONEYPOTNAME.CurrState"
 	$content = [IO.File]::ReadAllText($Body)
 
     if($content -contains $Critical){
         #check_mk output
         Write-Host "<<<local>>>"
-        Write-Host "2 "HoneySpotter-HONEYPOTNAME" - CRITICAL: $content"
+        Write-Host "2 "HoneySpotter-HONEYPOTNAME" - CRITICAL: $content INCIDENT TRIGGERED!"
     }
     elseif ($content -contains $Warning){
         #check_mk output
         Write-Host "<<<local>>>"
-        Write-Host "1 "HoneySpotter-HONEYPOTNAME" - WARNING: $content"
+        Write-Host "1 "HoneySpotter-HONEYPOTNAME" - WARNING: $content Anomalous traffic detected!"
     }
 	elseif ($content -contains $OK){
         #check_mk output
         Write-Host "<<<local>>>"
-        Write-Host "0 "HoneySpotter-HONEYPOTNAME" - OK: Contained Check --> $content"
+        Write-Host "0 "HoneySpotter-HONEYPOTNAME" - - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
     }    
 	else 
 	{		
 		#check_mk output
 		Write-Host "<<<local>>>"
-		Write-Host "0 "HoneySpotter-HONEYPOTNAME" - OK: $content"
+		Write-Host "0 "HoneySpotter-HONEYPOTNAME" - - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
 	}
     
