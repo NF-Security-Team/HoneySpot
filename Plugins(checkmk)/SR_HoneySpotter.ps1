@@ -2,7 +2,7 @@
 #
 # Check MK Local Script
 # Honeypot state Checker
-# Via Powershell it retrive the alyvix state reading a txt file
+# Via Powershell it retrives the HoneySpotter_HONEYPOTNAME state reading a txt file
 # Checks if any honeypot triggered applies a $Warning or $Critical state status on CheckMK
 # Author: Nicolas Fasolo
 #
