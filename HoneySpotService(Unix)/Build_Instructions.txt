@@ -2,3 +2,4 @@
 
 pyinstaller --onefile HoneySpotListenerSRV.py
 
+# Due to possible disk overflows, REMEMBER to create a logrotate job for HoneySpotListenerSRV.log!!!
