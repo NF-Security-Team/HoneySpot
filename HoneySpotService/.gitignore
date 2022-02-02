@@ -6,7 +6,7 @@
 *.user
 *.sln.docstates
 
-[Pp]ackages/
+#[Pp]ackages/
 
 # Build results
 [Dd]ebug/
