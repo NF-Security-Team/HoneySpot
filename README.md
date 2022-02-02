@@ -1,7 +1,7 @@
 # HoneySpot
 <br>
 
-![](https://i.imgur.com/MpwlleC.png)
+![](https://i.imgur.com/MpwlleC.png?1)
 
 <br>
 
