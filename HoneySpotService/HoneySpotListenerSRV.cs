@@ -152,7 +152,14 @@ namespace HoneySpotService
             }
             catch
             {
-                // Do Nothing
+                try
+                {
+                    client.Close();
+                }
+                catch
+                {
+                    // Do Nothing
+                }
             }
         }
         private void DoWork()
