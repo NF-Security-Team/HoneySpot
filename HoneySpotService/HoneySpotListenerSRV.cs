@@ -40,18 +40,16 @@ namespace HoneySpotService
             _thread.Abort();
         }
 
-        public void OnNewClient(TcpListener tcp_server, List<string> All_ReceivedTraffic, string CheckState_path)
+        public void OnNewClient(TcpListener tcp_server, List<string> All_ReceivedTraffic, string CheckState_path, TcpClient client)
         {
             try
             {
-                // Perform a blocking call to accept requests.
-                TcpClient client = tcp_server.AcceptTcpClient();
-                Logger.Info("Connection received. Server connected.");
                 src_ip_addr = client.Client.RemoteEndPoint.ToString();
                 // We must remove port from src_ip_addr for later uses 
                 int index = src_ip_addr.IndexOf(":");
                 if (index >= 0)
                     src_ip_addr = src_ip_addr.Substring(0, index);
+                Logger.Info("Connection from " + src_ip_addr + " received.");
 
                 // Read data received from client through a StreamReader in order to take only a single line (this could easily be our attacker payload, or part of it)
                 // Get a stream object for reading and writing
@@ -218,7 +216,9 @@ namespace HoneySpotService
                             Let's take care of Multiple Concurrent Clients
                             After having called the blocking state for listening let's spawn a new thread each time a client has connected to avoid the whole program to wait indefinitely
                             */
-                            Thread _OnNewClientThread = new Thread(() => OnNewClient(server, All_ReceivedTraffic, CheckState_path));
+                            // Perform a blocking call to accept requests.
+                            TcpClient client = server.AcceptTcpClient();
+                            Thread _OnNewClientThread = new Thread(() => OnNewClient(server, All_ReceivedTraffic, CheckState_path, client));
                             _OnNewClientThread.Start();
                             counter++;
                         }
