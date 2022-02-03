@@ -19,25 +19,25 @@ $OK = "OK"
     $Body = "C:\ProgramData\checkmk\agent\mrpe\HoneySpotter_HONEYPOTNAME.CurrState"
 	$content = [IO.File]::ReadAllText($Body)
 
-    if($content -contains $Critical){
+    if($content -Match $Critical){
         #check_mk output
         Write-Host "<<<local>>>"
         Write-Host "2 "HoneySpotter-HONEYPOTNAME" - CRITICAL: $content INCIDENT TRIGGERED!"
     }
-    elseif ($content -contains $Warning){
+    elseif ($content -Match $Warning){
         #check_mk output
         Write-Host "<<<local>>>"
         Write-Host "1 "HoneySpotter-HONEYPOTNAME" - WARNING: $content Anomalous traffic detected!"
     }
-	elseif ($content -contains $OK){
+	elseif ($content -Match $OK){
         #check_mk output
         Write-Host "<<<local>>>"
-        Write-Host "0 "HoneySpotter-HONEYPOTNAME" - - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
+        Write-Host "0 "HoneySpotter-HONEYPOTNAME" - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
     }    
 	else 
 	{		
 		#check_mk output
 		Write-Host "<<<local>>>"
-		Write-Host "0 "HoneySpotter-HONEYPOTNAME" - - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
+		Write-Host "0 "HoneySpotter-HONEYPOTNAME" - OK: Contained Check --> $content Nothing is happening... you can sleep well :)"
 	}
     
