@@ -18,6 +18,7 @@ namespace HoneySpotService
         public static String WL_path = @".\Logger\WhiteList.db";
         public static String sniff_path = @".\Logger\sniff";
         public static String logger_folder = @".\Logger";
+        public static String FileState, Filecontent;
         List<string> ReceivedTraffic = new List<string>();
         string current_dateTime = "";
         string src_ip_addr = "";
@@ -44,6 +45,7 @@ namespace HoneySpotService
         {
             try
             {
+                Console.WriteLine("[FILEPATH] " + CheckState_path);
                 src_ip_addr = client.Client.RemoteEndPoint.ToString();
                 // We must remove port from src_ip_addr for later uses 
                 int index = src_ip_addr.IndexOf(":");
@@ -80,6 +82,8 @@ namespace HoneySpotService
                         {
                             ReceivedTraffic.Add(current_dateTime + "," + src_ip_addr + "," + streamLine);
                             string Content = "Sniff Path: " + sniff_path + " -- Received Traffic: " + ReceivedTraffic[(ReceivedTraffic.Count - 1)] + Environment.NewLine;
+                            Filecontent = Content;
+                            FileState = "CRITICAL";
 #if DEBUG
                             Console.WriteLine(Content);
 #endif
@@ -98,29 +102,6 @@ namespace HoneySpotService
                                     i++;
                                     Thread.Sleep(500);
                                     Logger.Info("Unable to write to sniff file " + sniff_path);
-                                    continue;
-                                }
-                            }
-
-
-                            // Set CurrState file check output for CheckMK plugin in - CRITICAL STATE           
-                            i = 0;
-                            // Trying 5 times in case of failure due to concurrent threads handling
-                            while (i < 4)
-                            {
-                                try
-                                {
-                                    if(!File.ReadAllText(CheckState_path).Contains("CRITICAL"))
-                                    {
-                                        File.WriteAllText(CheckState_path, "CRITICAL - CRIT STATE -" + Content);
-                                    }
-                                    break;
-                                }
-                                catch
-                                {
-                                    i++;
-                                    Thread.Sleep(500);
-                                    Logger.Info("Unable to write to CheckState file " + CheckState_path);
                                     continue;
                                 }
                             }
@@ -146,8 +127,10 @@ namespace HoneySpotService
                         catch
                         {
                             break;
+
                         }
                     }
+                    
                 }
             }
             catch
@@ -162,6 +145,74 @@ namespace HoneySpotService
                 }
             }
         }
+        private void CheckMK_Handler()
+        {
+            //it never ends
+            while(true)
+            {
+                if(FileState == "CRITICAL")
+                {
+                    // Set CurrState file check output for CheckMK plugin in - CRITICAL STATE
+                    try
+                    {
+                        if (!File.ReadAllText(CheckState_path).Contains("CRITICAL"))
+                        {
+                            File.WriteAllText(CheckState_path, "CRITICAL - CRIT STATE -" + Filecontent);
+                            Thread.Sleep(1000 * 60 * 30);
+                            File.WriteAllText(CheckState_path, "OK - OK STATE");
+                            FileState = "OK";
+                        }                        
+                    }
+                    catch
+                    {                        
+                        Thread.Sleep(500);
+                        Logger.Info("Unable to write to CheckState file " + CheckState_path);
+                    }
+                   
+                }
+                if (FileState == "WARNING")
+                {
+                    // Set CurrState file check output for CheckMK plugin in - CRITICAL STATE
+                    try
+                    {
+                        if (!File.ReadAllText(CheckState_path).Contains("WARNING"))
+                        {
+                            File.WriteAllText(CheckState_path, "WARNING -" + Filecontent);
+                            Thread.Sleep(1000 * 60 * 30);
+                            File.WriteAllText(CheckState_path, "OK - OK STATE");
+                            FileState = "OK";
+                        }
+                    }
+                    catch
+                    {                        
+                        Thread.Sleep(500);
+                        Logger.Info("Unable to write to CheckState file " + CheckState_path);
+                    }
+                }
+                if (FileState == "OK")
+                {
+                    // Set CurrState file check output for CheckMK plugin in - OK STATE STATE
+                    try
+                    {
+                        if (!File.ReadAllText(CheckState_path).Contains("OK - OK STATE"))
+                        {
+                            /// Set/Reset CurrState file check output for CheckMK plugin in - OK STATE                            
+                            File.WriteAllText(CheckState_path, "OK - OK STATE");
+                            FileState = "OK";
+
+                        }
+                    }
+                    catch
+                    {                        
+                        Thread.Sleep(500);
+                        Logger.Info("Unable to write to CheckState file " + CheckState_path);
+                    }
+                }
+                
+            }
+
+        }
+
         private void DoWork()
         {
             while(true)
@@ -185,11 +236,16 @@ namespace HoneySpotService
                 TcpListener server = null;
                 try
                 {
+                    //Start Local File Modifier Thread
+                    Thread thread = new Thread(CheckMK_Handler);
+                    thread.Start();
+
                     // Set the TcpListener on port 6859.
                     Int32 port = 6859;
                     // Set/reset CheckState_path
-                    CheckState_path = "";
-                    CheckState_path = CheckState_path + "HoneySpotter_" + port.ToString() + ".CurrState";
+                    Console.WriteLine("[Writing the File for first time]");
+                    CheckState_path = @"C:\ProgramData\checkmk\agent\mrpe\";
+                    CheckState_path = CheckState_path + "HoneySpotter_" + port.ToString() + ".CurrState";                    
 
                     /// Set/Reset CurrState file check output for CheckMK plugin in - OK STATE                            
                     File.WriteAllText(CheckState_path, "OK - OK STATE");
@@ -211,6 +267,7 @@ namespace HoneySpotService
                     // Let's set a counter and a timeout for our listening sessions
                     int counter = 1;
                     TimeSpan timeout = DateTime.Now.TimeOfDay;
+                    //Console.WriteLine("1 minute has passed");
                     timeout += TimeSpan.FromSeconds(60);
 
                     // Listen for a total of 30 minutes, then restart
@@ -227,10 +284,11 @@ namespace HoneySpotService
                             TcpClient client = server.AcceptTcpClient();
                             Thread _OnNewClientThread = new Thread(() => OnNewClient(server, All_ReceivedTraffic, CheckState_path, client));
                             _OnNewClientThread.Start();
+                            
                             counter++;
                         }
                     }
-                    // Stop listening for clients
+                    Console.WriteLine("Counter value reached. Stopping server...");
                     Logger.Info("Counter value reached. Stopping server...");
                     server.Stop();
                 }
