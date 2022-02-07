@@ -49,13 +49,23 @@ Windows <br>
 ```
 netsh advfirewall firewall add rule name="HoneySpot_PORTNUMBER" dir=in action=allow program="C:\HoneySpot\HoneySpoRt_Service.exe" enable=yes
 ```
-4) Place the Check_Mk plugins inside "Plugins" local directory 
+4) Modify "HoneySpotter_HONEYPOTNAME.CurrState" string and Place the Check_Mk plugins inside "Plugins" local directory 
 Windows <br>
+
+![](https://i.imgur.com/T55VTWD.png)
+
+<br>
 
 ```
 C:\ProgramData\checkmk\agent\plugins\
 ```
+<br>
+
 Linux <br>
+
+![](https://i.imgur.com/nCpXPVA.png)
+
+<br>
 
 ```
 root@linux# chmod +x /usr/lib/check_mk_agent/local/HoneySpoRt_%portNumber%.sh
