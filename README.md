@@ -75,3 +75,7 @@ root@linux# chmod +x /usr/lib/check_mk_agent/local/HoneySpoRt_%portNumber%.sh
 
 <br> 
 
+# Setup Diagram <br>
+
+![](https://i.imgur.com/CO6csLU.png)
+
