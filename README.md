@@ -89,3 +89,7 @@ root@linux# chmod +x /usr/lib/check_mk_agent/local/HoneySpoRt_%portNumber%.sh
 
 ![](https://i.imgur.com/CO6csLU.png)
 
+# Network Implementation Example <br>
+
+![](https://i.imgur.com/6PlwpkK.png)
+
