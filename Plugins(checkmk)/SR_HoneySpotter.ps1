@@ -15,7 +15,7 @@ $OK = "OK"
 
 #### Code Start
 
-	#The file where it needs to be written current state be sure to replace "HONEYPOTNAME" with the actual monitored honeypot name
+	#Be sure to replace "HONEYPOTNAME" with the actual monitored honeypot name
     $Body = "C:\ProgramData\checkmk\agent\mrpe\HoneySpotter_HONEYPOTNAME.CurrState"
 	$content = [IO.File]::ReadAllText($Body)
 
