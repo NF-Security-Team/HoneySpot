@@ -23,7 +23,7 @@ Windows <br>
 HoneySpotListenerSRV.exe /install -uninstall (shorten /i and /u)
 ```
 
-Linux (TODO) <br>
+Linux <br>
 
 ```
 chmod +x HoneySpotListenerSRV
